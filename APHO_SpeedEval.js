@@ -4,7 +4,7 @@
 /*:
 * @title Speed Eval
 * @author Apho
-* @plugindesc v1.1 Allows the use of ​​​​​formulas to adjust the invocation speed of skills and items, and adjusting base speed formula.
+* @plugindesc v1.2 Allows the use of ​​​​​formulas to adjust the invocation speed of skills and items, and adjusting base speed formula.
 * 
 * @param Base speed
 * @desc Formula to determine base speed.
@@ -45,6 +45,7 @@
 * - Do not repost or claim as your own, even if edited.
 * 
 * VERSION HISTORY
+* v1.2 - 2023/6/1 - Fixed a bug that caused incompatibility issues with other turn order display plugins.
 * v1.1 - 2022/9/10 - Optimized code to improve compatibility with other plugins.
 * v1.0 - 2022/9/9 - Initial release.
 */
@@ -107,7 +108,7 @@ Game_Action.prototype.speed = function()
     {
         speed += this.subject().attackSpeed();
     }
-    if(this.item().SpeedEval)
+    if(this.item() && this.item().SpeedEval)
     {
         var a = this.subject();
         eval(this.item().SpeedEval);
