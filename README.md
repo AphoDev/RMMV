@@ -5,6 +5,7 @@
 
 ### AVAILABLE PLUGINS
 * **Equip Optimize Grade** - Allows the 'Optimize' command in the equip menu to utilize a grading system defined by the developer.
+* **Random Game Over** - Allows randomisation of the defeat ME, Game Over image, and Game Over ME.
 * **Speed Eval** - Allows the use of formulas to adjust the invocation speed of skills and items, and adjusting base speed formula.
 
 ### HOW TO DOWNLOAD
