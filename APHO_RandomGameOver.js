@@ -7,7 +7,7 @@
 * @plugindesc v1.0 Allows for randomising the defeat ME, Game Over image, and Game Over ME, and having hue and pitch variances for them.
 *
 * @param DefeatMEList
-* @text Defeat ME List
+* @text Defeat ME list
 * @type file[]
 * @dir audio/me
 * @require 1
@@ -53,8 +53,28 @@
 * @min -360
 * @default 180
 *
+* @param OverlayList
+* @text Game Over overlay list
+* @type file[]
+* @dir img/gameover
+* @desc (Optional)Pool of images to be overlayed over the Game Over screen
+* 
+* @param OverlayHueMin
+* @text Minimum hue (Overlay)
+* @type number
+* @desc Minimum hue adjustment for the gameover overlay.
+* @min -360
+* @default 0
+* 
+* @param OverlayHueMax
+* @text Maximum hue (Overlay)
+* @type number
+* @desc Maximum hue adjustment for the gameover overlay.
+* @min -360
+* @default 0
+*
 * @param GameOverMEList
-* @text Game Over ME List
+* @text Game Over ME list
 * @type file[]
 * @dir audio/me
 * @require 1
@@ -85,6 +105,7 @@
 * Hue and pitch variances may also be set.
 * You will need to create a 'gameover' folder in your img directory for the
 * gameover images.
+* You may also add an optional overlay over the Game Over image.
 * 
 * TERMS OF USE
 * - Free for commercial and non-commercial use, as long as I get a free copy
@@ -93,12 +114,18 @@
 * - Do not repost or claim as your own, even if edited.
 * 
 * VERSION HISTORY
+* v1.1 - 2023/6/30 - Added optional overlay for the Game Over image.
 * v1.0 - 2023/6/28 - Initial release.
 */
 (function(){
     var parameters = PluginManager.parameters('APHO_RandomGameOver');
     var ImageList = JSON.parse(parameters['ImageList']);
     var HueRange = Math.max(parseInt(parameters['HueMax']) - parseInt(parameters['HueMin']), 0);
+    if(parameters['OverlayList'] != '' && parameters['OverlayList'] != '[]')
+    {
+        var OverlayList = JSON.parse(parameters['OverlayList']);
+        var OverlayHueRange = Math.max(parseInt(parameters['OverlayHueMax']) - parseInt(parameters['OverlayHueMin']), 0);
+    }
     var DefeatMEList = JSON.parse(parameters['DefeatMEList']);
     var DefeatPitchRange = Math.max(parseInt(parameters['DefeatPitchMax']) - parseInt(parameters['DefeatPitchMin']), 0);
     var DefeatVolume = parseInt(parameters['DefeatVolume']);
@@ -123,6 +150,13 @@
         let Image = ImageList[Math.randomInt(ImageList.length)];
         this._backSprite = new Sprite(ImageManager.loadBitmap('img/gameover/', Image, Hue, false));
         this.addChild(this._backSprite);
+        if(parameters['OverlayList'] != '' && parameters['OverlayList'] != '[]')
+        {
+            let OverlayHue = parseInt(parameters['OverlayHueMin']) + Math.randomInt(OverlayHueRange + 1);
+            let Overlay = OverlayList[Math.randomInt(OverlayList.length)];
+            this._overlay = new Sprite(ImageManager.loadBitmap('img/gameover/', Overlay, OverlayHue, false));
+            this.addChild(this._overlay);
+        }
     };
     Scene_Gameover.prototype.playGameoverMusic = function()
     {
