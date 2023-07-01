@@ -4,7 +4,7 @@
 /*:
 * @title Random Game Over
 * @author Apho
-* @plugindesc v1.0 Allows for randomising the defeat ME, Game Over image, and Game Over ME, and having hue and pitch variances for them.
+* @plugindesc v1.1 Allows for randomising the defeat ME, Game Over image, and Game Over ME, and having hue and pitch variances for them.
 *
 * @param DefeatMEList
 * @text Defeat ME list
