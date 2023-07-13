@@ -4,6 +4,7 @@
 * Do not repost or claim as your own, even if edited.
 
 ### AVAILABLE PLUGINS
+* **Damage Core** - Allows for more control over damage and stuff.
 * **Equip Optimize Grade** - Allows the 'Optimize' command in the equip menu to utilize a grading system defined by the developer.
 * **Random Critical Animation** - Allows for playing a random animation when landing a crit.
 * **Random Enemy Hue** - Allows randomisation of enemy hues.
