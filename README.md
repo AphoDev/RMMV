@@ -10,6 +10,7 @@
 * **Random Enemy Hue** - Allows randomisation of enemy hues.
 * **Random Game Over** - Allows randomisation of the defeat ME, Game Over image, and Game Over ME.
 * **Random Title Screen** - Allows customisation/randomisation of the title screen.
+* **Skill Seal** - Allows for more control over sealing skills.
 * **Speed Eval** - Allows the use of formulas to adjust the invocation speed of skills and items, and adjusting base speed formula.
 
 ### HOW TO DOWNLOAD
