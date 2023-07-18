@@ -75,7 +75,7 @@
 * Unseals all skills of skill type x. x is the number of the skill type.
 * Separate multiple values with a comma.
 *
-* <unsealp>, <unsealm,>, <unsealc>
+* <unsealp>, <unsealm>, <unsealc>
 * Unseals all physical, magical, or certain hit skills.
 *
 * <unsealtag:x>
