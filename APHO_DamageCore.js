@@ -108,6 +108,14 @@
 * For Actors, Classes, Enemies, or States, causes all of user's attacks and
 * skills to become adaptive.
 *
+* <adaptiveeval>
+* //code
+* </adaptiveeval>
+* Evaluates code to determine if the attack should be adaptive.
+* Must return either true (adaptive) or false (not adaptive).
+* You may use 'a' for the attacker, 'b' for the defender, and 'item' for the
+* skill/item Object.
+*
 * <piercing:x>, <ppiercing:x>, <mpiercing:x>
 * Ignores a percentage of target's damage reduction. x must be a value between
 * 0 and 1.
@@ -126,6 +134,23 @@ skills to have x piercing, overriding any skill or item notetags.
 * 0.4 / 40% of the damage reduction is ignored.
 * Target still has 20% * (1 - 0.4) = 12% damage reduction.
 * Final Physical Damage Rate = 100% - 12% = 88%
+*
+* <piercingeval>
+* //code
+* </piercingeval>
+* Evaluates code to determine piercing. Must return a value between 0 and 1.
+* You may also use <ppiercingeval> for physical piercing, or <mpiercingeval>
+* for magical piercing.
+* You may use 'a' for the attacker, 'b' for the defender, and 'item' for the
+* skill/item Object.
+* Values below 0 are treated as 0. 
+*
+* EXAMPLE
+* <mpiercingeval>
+* (a.agi - b.agi) * 0.01
+* </mpiercingeval>
+* This would give 1% magical piercing per AGI the user has more than the target.
+* If the target has more AGI, piercing will be 0.
 *
 * <nullguard>
 * Bypasses guard. Damage will be calculated as though target was not guarding.
@@ -166,24 +191,131 @@ skills to have x piercing, overriding any skill or item notetags.
 * - Do not repost or claim as your own, even if edited.
 * 
 * VERSION HISTORY
+* v1.1 - 2023/7/20 - Added adaptive eval and piercing eval notetags.
 * v1.0 - 2023/7/13 - Initial release.
 */
 (function(){
     var parameters = PluginManager.parameters('APHO_DamageCore');
     var Imported_YEP_DamageCore = $plugins.filter(function(p) { return p.name === 'YEP_DamageCore' && p.status === true; }).length > 0
+    CheckAdaptiveEval = function(notetag, a, b, item)
+    {
+        const AdaptiveEvalOpen = '<adaptiveeval>';
+        const AdaptiveEvalClose = '</adaptiveeval>';
+        let ReadAdaptiveEval = false;
+        let AdaptiveEvalInfo = "";
+        for (var n = 0; n < notetag.length; n++)
+        {
+            let NoteData = notetag.split(/[\r\n]+/);
+            let line = NoteData[n];
+            if (line && line.match(AdaptiveEvalOpen))
+            {
+                ReadAdaptiveEval = true;
+            }
+            else if (line && line.match(AdaptiveEvalClose))
+            {
+                ReadAdaptiveEval = false;
+            }
+            else if (ReadAdaptiveEval == true)
+            {
+                AdaptiveEvalInfo += line + '\n';
+            }
+        }
+        return eval(AdaptiveEvalInfo)
+    };
+    CheckPiercingEval = function(notetag, a, b, item)
+    {
+        const PiercingEvalOpen = '<piercingeval>';
+        const PiercingEvalClose = '</piercingeval>';
+        let ReadPiercingEval = false;
+        let PiercingEvalInfo = "";
+        for (var n = 0; n < notetag.length; n++)
+        {
+            let NoteData = notetag.split(/[\r\n]+/);
+            let line = NoteData[n];
+            if (line && line.match(PiercingEvalOpen))
+            {
+                ReadPiercingEval = true;
+            }
+            else if (line && line.match(PiercingEvalClose))
+            {
+                ReadPiercingEval = false;
+            }
+            else if (ReadPiercingEval == true)
+            {
+                PiercingEvalInfo += line + '\n';
+            }
+        }
+        return Math.max(0, eval(PiercingEvalInfo))
+    };
+    CheckPPiercingEval = function(notetag, a, b, item)
+    {
+        const PPiercingEvalOpen = '<ppiercingeval>';
+        const PPiercingEvalClose = '</ppiercingeval>';
+        let ReadPPiercingEval = false;
+        let PPiercingEvalInfo = "";
+        for (var n = 0; n < notetag.length; n++)
+        {
+            let NoteData = notetag.split(/[\r\n]+/);
+            let line = NoteData[n];
+            if (line && line.match(PPiercingEvalOpen))
+            {
+                ReadPPiercingEval = true;
+            }
+            else if (line && line.match(PPiercingEvalClose))
+            {
+                ReadPPiercingEval = false;
+            }
+            else if (ReadPPiercingEval == true)
+            {
+                PPiercingEvalInfo += line + '\n';
+            }
+        }
+        return Math.max(0, eval(PPiercingEvalInfo))
+    };
+    CheckMPiercingEval = function(notetag, a, b, item)
+    {
+        const MPiercingEvalOpen = '<mpiercingeval>';
+        const MPiercingEvalClose = '</mpiercingeval>';
+        let ReadMPiercingEval = false;
+        let MPiercingEvalInfo = "";
+        for (var n = 0; n < notetag.length; n++)
+        {
+            let NoteData = notetag.split(/[\r\n]+/);
+            let line = NoteData[n];
+            if (line && line.match(MPiercingEvalOpen))
+            {
+                ReadMPiercingEval = true;
+            }
+            else if (line && line.match(MPiercingEvalClose))
+            {
+                ReadMPiercingEval = false;
+            }
+            else if (ReadMPiercingEval == true)
+            {
+                MPiercingEvalInfo += line + '\n';
+            }
+        }
+        return Math.max(0, eval(MPiercingEvalInfo))
+    };
     const Game_Action_makeDamageValue = Game_Action.prototype.makeDamageValue;
     Game_Action.prototype.makeDamageValue = function(target, critical) {
         var item = this.item();
-        let adaptive = item.meta.adaptive;
+        let a = this.subject();
+        let adaptive;
+        if(item.meta.adaptiveeval) adaptive = CheckAdaptiveEval(item.note, a, target, item);
+        adaptive = item.meta.adaptive;
         let piercing = parseFloat(item.meta.piercing) || 0;
+        if(item.meta.piercingeval) piercing = CheckPiercingEval(item.note, a, target, item);
         let ppiercing = parseFloat(item.meta.ppiercing) || 0;
         if(piercing) ppiercing = Math.max(piercing, ppiercing);
+        if(item.meta.ppiercingeval) ppiercing = CheckPPiercingEval(item.note, a, target, item);
         let mpiercing = parseFloat(item.meta.mpiercing) || 0;
         if(piercing) mpiercing = Math.max(piercing, mpiercing);
+        if(item.meta.mpiercingeval) mpiercing = CheckMPiercingEval(item.note, a, target, item);
         let nullguard = item.meta.nullguard;
-        let a = this.subject();
         if(a.isEnemy())
         {
+            if(a.enemy().meta.adaptiveeval) adaptive = CheckAdaptiveEval(a.enemy().note, a, target, item);
             if(a.enemy().meta.adaptive) adaptive = true;
             if(a.enemy().meta.ppiercing) ppiercing = parseFloat(a.enemy().meta.ppiercing);
             if(a.enemy().meta.mpiercing) mpiercing = parseFloat(a.enemy().meta.mpiercing);
@@ -191,6 +323,13 @@ skills to have x piercing, overriding any skill or item notetags.
             {
                 ppiercing = parseFloat(a.enemy().meta.piercing);
                 mpiercing = parseFloat(a.enemy().meta.piercing);
+            }
+            if(a.enemy().meta.ppiercingeval) ppiercing = CheckPPiercingEval(a.enemy().note, a, target, item);
+            if(a.enemy().meta.mpiercingeval) mpiercing = CheckMPiercingEval(a.enemy().note, a, target, item);
+            if(a.enemy().meta.piercingeval)
+            {
+                ppiercing = CheckPiercingEval(a.enemy().note, a, target, item);
+                mpiercing = CheckPiercingEval(a.enemy().note, a, target, item);
             }
             if(a.enemy().meta.ppiercingplus) ppiercing += parseFloat(a.enemy().meta.ppiercingplus);
             if(a.enemy().meta.mpiercingplus) mpiercing += parseFloat(a.enemy().meta.mpiercingplus);
@@ -209,6 +348,8 @@ skills to have x piercing, overriding any skill or item notetags.
             if(a.enemy().meta.nullguard) nullguard = true;
         }else if(a.isActor())
         {
+            if(a.actor().meta.adaptiveeval) adaptive = CheckAdaptiveEval(a.actor().note, a, target, item);
+            if($dataClasses[a._classId].meta.adaptiveeval) adaptive = CheckAdaptiveEval($dataClasses[a._classId].note, a, target, item);
             if(a.actor().meta.adaptive || $dataClasses[a._classId].meta.adaptive) adaptive = true;
             if(a.actor().meta.ppiercing) ppiercing = parseFloat(a.actor().meta.ppiercing);
             if(a.actor().meta.mpiercing) mpiercing = parseFloat(a.actor().meta.mpiercing);
@@ -217,12 +358,26 @@ skills to have x piercing, overriding any skill or item notetags.
                 ppiercing = parseFloat(a.actor().meta.piercing);
                 mpiercing = parseFloat(a.actor().meta.piercing);
             }
+            if(a.actor().meta.ppiercingeval) ppiercing = CheckPPiercingEval(a.actor().note, a, target, item);
+            if(a.actor().meta.mpiercingeval) mpiercing = CheckMPiercingEval(a.actor().note, a, target, item);
+            if(a.actor().meta.piercingeval)
+            {
+                ppiercing = CheckPiercingEval(a.actor().note, a, target, item);
+                mpiercing = CheckPiercingEval(a.actor().note, a, target, item);
+            }
             if($dataClasses[a._classId].meta.ppiercing) ppiercing = parseFloat($dataClasses[a._classId].meta.ppiercing);
             if($dataClasses[a._classId].meta.mpiercing) mpiercing = parseFloat($dataClasses[a._classId].meta.mpiercing);
             if($dataClasses[a._classId].meta.piercing)
             {
                 ppiercing = parseFloat($dataClasses[a._classId].meta.piercing);
                 mpiercing = parseFloat($dataClasses[a._classId].meta.piercing);
+            }
+            if($dataClasses[a._classId].meta.ppiercingeval) ppiercing = CheckPPiercingEval($dataClasses[a._classId].note, a, target, item);
+            if($dataClasses[a._classId].meta.mpiercingeval) mpiercing = CheckMPiercingEval($dataClasses[a._classId].note, a, target, item);
+            if($dataClasses[a._classId].meta.piercingeval)
+            {
+                ppiercing = CheckPiercingEval($dataClasses[a._classId].note, a, target, item);
+                mpiercing = CheckPiercingEval($dataClasses[a._classId].note, a, target, item);
             }
             if(a.actor().meta.ppiercingplus) ppiercing += parseFloat(a.actor().meta.ppiercingplus);
             if(a.actor().meta.mpiercingplus) mpiercing += parseFloat(a.actor().meta.mpiercingplus);
@@ -256,11 +411,19 @@ skills to have x piercing, overriding any skill or item notetags.
         }
         for(var n = 0; n < a.states().length; n++)
         {
+            if(a.states()[n].meta.adaptiveeval) adaptive = CheckAdaptiveEval(a.states()[n].note, a, target, item);
             if(a.states()[n].meta.adaptive) adaptive = true;
             if(a.states()[n].meta.piercing)
             {
                 ppiercing = parseFloat(a.states()[n].meta.piercing);
                 mpiercing = parseFloat(a.states()[n].meta.piercing)
+            }
+            if(a.states()[n].meta.ppiercingeval) ppiercing = CheckPPiercingEval(a.states()[n].note, a, target, item);
+            if(a.states()[n].meta.mpiercingeval) mpiercing = CheckMPiercingEval(a.states()[n].note, a, target, item);
+            if(a.states()[n].meta.piercingeval)
+            {
+                ppiercing = CheckPiercingEval(a.states()[n].note, a, target, item);
+                mpiercing = CheckPiercingEval(a.states()[n].note, a, target, item);
             }
             if(a.states()[n].meta.ppiercingplus) ppiercing += parseFloat(a.states()[n].meta.ppiercingplus);
             if(a.states()[n].meta.mpiercingplus) mpiercing += parseFloat(a.states()[n].meta.mpiercingplus);
