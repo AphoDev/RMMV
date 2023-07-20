@@ -4,7 +4,7 @@
 /*:
 * @title Damage Core
 * @author Apho
-* @plugindesc v1.0 Allows for more control over damage and stuff.
+* @plugindesc v1.1 Allows for more control over damage and stuff.
 *
 * @param NoDamageSound
 * @text No Damage Sound
