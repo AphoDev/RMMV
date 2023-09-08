@@ -6,6 +6,7 @@
 ### AVAILABLE PLUGINS
 * **Damage Core** - Allows for more control over damage and stuff.
 * **Equip Optimize Grade** - Allows the 'Optimize' command in the equip menu to utilize a grading system defined by the developer.
+* **Max Items** - Allows for more control over the maximum number of items that may be carried, as well as displaying information about them in the inventory.
 * **Random Critical Animation** - Allows for playing a random animation when landing a crit.
 * **Random Enemy Hue** - Allows randomisation of enemy hues.
 * **Random Game Over** - Allows randomisation of the defeat ME, Game Over image, and Game Over ME.
