@@ -4,7 +4,7 @@
 /*:
 * @title Max Items
 * @author Apho
-* @plugindesc v1.0 Allows for more control over the maximum number of items that may be carried, as well as displaying information about them in the inventory.
+* @plugindesc v1.1 Allows for more control over the maximum number of items that may be carried, as well as displaying information about them in the inventory.
 *
 * @param DefaultMax
 * @text Default Max.
@@ -180,6 +180,7 @@
 * - Do not repost or claim as your own, even if edited.
 * 
 * VERSION HISTORY
+* v1.1 - 2023/09/25 - Bugfix for crashing when checking an item that does not exist.
 * v1.0 - 2023/09/08 - Initial release.
 */
 (function(){
@@ -211,18 +212,18 @@
     };
     const Game_Party_maxItems = Game_Party.prototype.maxItems;
     Game_Party.prototype.maxItems = function(item) {
-        if(CheckMaxEval(item.note, item) && CheckMaxEval(item.note, item) > 0)
+        if(item)
         {
-            return CheckMaxEval(item.note, item);
+            if(CheckMaxEval(item.note, item) && CheckMaxEval(item.note, item) > 0)
+            {
+                return CheckMaxEval(item.note, item);
+            }
+            else if(item.meta.max)
+            {
+                return item.meta.max;
+            }
         }
-        else if(item.meta.max)
-        {
-            return item.meta.max;
-        }
-        else
-        {
-            return Function("return " + parameters['DefaultMax'])() || Game_Party_maxItems.call(this, item);
-        }
+        return Function("return " + parameters['DefaultMax'])() || Game_Party_maxItems.call(this, item);
     }
     const Game_Party_gainItem = Game_Party.prototype.gainItem;
     Game_Party.prototype.gainItem = function(item, amount, includeEquip) {
