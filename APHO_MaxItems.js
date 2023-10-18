@@ -180,6 +180,7 @@
 * - Do not repost or claim as your own, even if edited.
 * 
 * VERSION HISTORY
+* v1.2 - 2023/10/18 - Bugfix for crashing during battle test when using the <max> notetag.
 * v1.1 - 2023/09/25 - Bugfix for crashing when checking an item that does not exist.
 * v1.0 - 2023/09/08 - Initial release.
 */
@@ -220,7 +221,7 @@
             }
             else if(item.meta.max)
             {
-                return item.meta.max;
+                return parseInt(item.meta.max);
             }
         }
         return Function("return " + parameters['DefaultMax'])() || Game_Party_maxItems.call(this, item);
