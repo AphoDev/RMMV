@@ -4,6 +4,7 @@
 * Do not repost or claim as your own, even if edited.
 
 ### AVAILABLE PLUGINS
+* **Battle Test** - Provides various features to help with battle testing.
 * **Damage Core** - Allows for more control over damage and stuff.
 * **Equip Optimize Grade** - Allows the 'Optimize' command in the equip menu to utilize a grading system defined by the developer.
 * **Max Items** - Allows for more control over the maximum number of items that may be carried, as well as displaying information about them in the inventory.
