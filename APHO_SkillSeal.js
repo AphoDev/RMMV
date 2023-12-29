@@ -103,12 +103,14 @@
 * - Do not repost or claim as your own, even if edited.
 * 
 * VERSION HISTORY
+* v1.1 - 2023/12/29 - Compatibility fix for actor cooldowns with Skill Cooldowns Visustella MZ.
 * v1.0 - 2023/07/18 - Initial release.
 */
 (function(){
     var parameters = PluginManager.parameters('APHO_SkillSeal');
     var ExcludeFromSeal = parameters['ExcludeFromSeal'].split(",").map(Number);
     var ExcludeFromEval = JSON.parse(parameters['ExcludeFromEval']);
+    var Imported_VisuMZ_3_SkillCooldowns = $plugins.filter(function(p) { return p.name === 'VisuMZ_3_SkillCooldowns' && p.status === true; }).length > 0
     CheckSealEval = function(notetag, skill, a)
     {
         let excludelist = ExcludeFromSeal;
@@ -164,6 +166,16 @@
     };
     const Game_BattlerBase_meetsSkillConditions = Game_BattlerBase.prototype.meetsSkillConditions;
     Game_BattlerBase.prototype.meetsSkillConditions = function(skill) {
+        if(Imported_VisuMZ_3_SkillCooldowns)
+        {
+            try
+            {
+                if((this.isActor() && $actorGetSkillCooldown(this._actorId, skill.id) > 0))
+                {
+                    return false;
+                }
+            }catch(e){console.log('VS Skill Cooldown MZ Compatibility Error')}
+        }
         let seal = skill.meta.sealed || false;
         if(this.isEnemy())
         {
