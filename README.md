@@ -1,7 +1,8 @@
-### TERMS OF USE
-* All my plugins are free for both non-commercial and commercial projects. I only ask that for commercial games, please send me a free copy of the game. (I can be reached via Twitter @AphoDev)
+### TERMS OF USE (Updated 2026/04/29)
+* All my plugins are free for both non-commercial and commercial projects. I only ask that for commercial games, please send me a free copy of the game. (I can be reached via Bluesky @apho.itch.io / Twitter @AphoDev)
 * Edits are allowed for personal use.
 * Do not repost or claim as your own, even if edited.
+* Do not use for training AI models. This includes, but is not limited to, inputting the plugin contents or part thereof into AI models that train on user input.
 
 ### AVAILABLE PLUGINS
 * **Battle Test** - Provides various features to help with battle testing.
