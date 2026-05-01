@@ -34,5 +34,6 @@ When reporting an issue, please include the following:
 * Exact plugin parameters used (for plugins that have them)
 * Exact notetags used (for plugins that use them)
 * Error messages from the console, if any.
+* Steps to reproduce the issue.
 
 Reports that do not follow the above instructions will be ignored. This is due to people reporting non-issues where the problem exists between the chair and keyboard, which I unfortunately do not have time to address.
